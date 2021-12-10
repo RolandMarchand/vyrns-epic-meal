@@ -12,6 +12,7 @@ func _unhandled_key_input(_event) -> void:
 
 func _physics_process(_delta) -> void:
 	set_dir()
+	# warning-ignore:return_value_discarded
 	move_and_slide(dir.normalized() * LOCAL_SPEED)
 
 func set_dir() -> void:

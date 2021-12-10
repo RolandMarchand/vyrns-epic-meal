@@ -15,8 +15,9 @@ var _astar := AStar2D.new()
 var _pos_to_point := {}
 
 func _ready():
-	_set_new_grid()
+	_create_new_grid()
 	_astar_setup()
+
 	_grid_add_flag(get_furthest_room_from_start(), BOSS)
 
 
@@ -72,7 +73,8 @@ func get_furthest_room_from_start() -> Vector2:
 # # # # # # # # #
 
 ## Returns a randomly generated grid designed for map design
-func _set_new_grid() -> void:
+## Doesn't assign other flags to cells than VISITED and START
+func _create_new_grid() -> void:
 	# RNG
 	var rng = RandomNumberGenerator.new()
 	rng.randomize()

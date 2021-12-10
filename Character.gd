@@ -26,13 +26,15 @@ var anim: String = "idle"
 var knockback: Vector2 = Vector2.ZERO
 export(bool) var can_attack: bool = true
 
+# warning-ignore:shadowed_variable
 func set_knockback(dir: Vector2) -> void:
 	knockback = dir * KNOCKBACK_FORCE
 	tween.interpolate_property(self, "knockback", knockback, Vector2.ZERO, KNOCKBACK_TIME, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 	tween.start()
 
-func _physics_process(delta) -> void:
+func _physics_process(_delta) -> void:
 	if knockback.length() > MIN_KNOCKBACK.length(): # knockback reduces in func set_knockback()
+		# warning-ignore:return_value_discarded
 		move_and_slide(knockback)
 
 	#set_anim()

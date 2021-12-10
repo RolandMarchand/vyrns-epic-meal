@@ -12,6 +12,7 @@ func _physics_process(_delta) -> void:
 		if position != path[1]:
 			var p = path[1] - path[0] # Distance from 0 to 1
 			p = p.clamped(1) # Converts path to a direction
+			# warning-ignore:return_value_discarded
 			move_and_slide(p * LOCAL_SPEED / 3)
 		else:
 			path.remove(0)
