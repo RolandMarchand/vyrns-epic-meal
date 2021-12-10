@@ -1,6 +1,7 @@
 extends Node
 
-enum {NOT_VISITED = -1, VISITED = 0b1, START = 0b10} # -1, 1, 2
+#                                 1            2            4
+enum {NOT_VISITED = -1, VISITED = 0b1, START = 0b10, BOSS = 0b100}
 
 const START_CELL := Vector2(0,0)
 
@@ -50,7 +51,9 @@ func _find_neighboring_cells(cell: Vector2) -> Array:
 func get_furthest_room_from_start() -> Vector2:
 	var furthest_path: PoolVector2Array
 
-	for cell in _grid.get_used_cells().shuffle(): # Shuffle to randomize boss room pos
+	var used_cells = _grid.get_used_cells()
+	used_cells.shuffle() # Shuffle to randomize boss room pos furthermore
+	for cell in used_cells:
 		var point = _pos_to_point[cell]
 
 		var path := _astar.get_point_path(point, _pos_to_point[START_CELL])
@@ -117,3 +120,17 @@ func get_neighbor_cnt(cur_cell: Vector2) -> int:
 				neigh_cnt += 1
 
 	return neigh_cnt - 1 # Minus the cell itself
+
+func _grid_add_flag(cell: Vector2, flag: int) -> void:
+	if _grid.get_cellv(cell) & flag:
+		push_warning("Cell: " + String(cell) +
+				" has aleady flag: " + String(flag) + ".")
+
+	_grid.set_cellv(cell, _grid.get_cellv(cell) | flag)
+
+func _grid_remove_flag(cell: Vector2, flag: int) -> void:
+	if _grid.get_cellv(cell) & flag:
+		_grid.set_cellv(cell, _grid.get_cellv(cell) - flag)
+	else:
+		push_warning("Cell: " + String(cell) +
+				" doesn't have flag: " + String(flag) + ".")

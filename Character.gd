@@ -52,7 +52,7 @@ func set_anim() -> void:
 	else:
 		anim = "idle"
 
-func attack():
+func attack() -> void:
 	can_attack = false
 
 	attack_area.rotation = last_dir.angle()
@@ -61,7 +61,7 @@ func attack():
 	$AttackTimer.start()
 
 
-func _on_AttackTimer_timeout():
+func _on_AttackTimer_timeout() -> void:
 	can_attack = true
 
 	attack_shape.disabled = true
