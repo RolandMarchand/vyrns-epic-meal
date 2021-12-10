@@ -1,7 +1,11 @@
 extends Node
 
-#                                 1            2            4
-enum {NOT_VISITED = -1, VISITED = 0b1, START = 0b10, BOSS = 0b100}
+enum {
+	NOT_VISITED = -1,
+	VISITED = 0b1, # 1
+	START = 0b10, # 2
+	BOSS = 0b100 # 4
+}
 
 const START_CELL := Vector2(0,0)
 
@@ -13,7 +17,7 @@ var _pos_to_point := {}
 func _ready():
 	_set_new_grid()
 	_astar_setup()
-	get_furthest_room_from_start()
+	_grid_add_flag(get_furthest_room_from_start(), BOSS)
 
 
 # # # # # # # # #
