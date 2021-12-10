@@ -1,12 +1,6 @@
 extends "res://Character.gd"
 
-
 const LOCAL_SPEED = 2 * SPEED # 5 units/second
-
-
-
-func oh_no():
-	print("nonono")
 
 func _ready():
 	health = 3

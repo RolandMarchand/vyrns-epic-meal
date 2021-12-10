@@ -23,14 +23,14 @@ func change_room(DOOR: int):
 		#Save.load_room()
 
 
-func _on_Up_body_entered(body):
+func _on_Up_body_entered(_body):
 	change_room(DOOR.UP)
 
-func _on_Right_body_entered(body):
+func _on_Right_body_entered(_body):
 	change_room(DOOR.RIGHT)
 
-func _on_Down_body_entered(body):
+func _on_Down_body_entered(_body):
 	change_room(DOOR.DOWN)
 
-func _on_Left_body_entered(body):
+func _on_Left_body_entered(_body):
 	change_room(DOOR.LEFT)

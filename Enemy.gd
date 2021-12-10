@@ -22,7 +22,7 @@ func _on_Hitbox_area_entered(area):
 		var player = area.owner
 
 		var knock_dir = player.position.direction_to(position).clamped(1)
-		knockback(knock_dir)
+		set_knockback(knock_dir)
 
 		health -= player.damage
 		if health < 1:
