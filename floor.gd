@@ -11,66 +11,102 @@ const START_CELL := Vector2(0,0)
 
 var _grid := TileMap.new()
 
-var _astar := AStar2D.new()
-var _pos_to_point := {}
+
+
+# Keys: Integer of doors, binary flags
+# Values: Array of rooms having as many doors
+var _room_w_door_cnt: Dictionary = {}
+# Keys: Vector2 of cells
+# Values: String of corresponding room's packed scene
+var _room_config: Dictionary = {}
+
+var prev_room: Vector2 = START_CELL
+var cur_room: Vector2 = START_CELL
+onready var main = get_tree().get_root().get_node("Main")
 
 func _ready():
+	_list_room_w_door_cnt()
+
 	_create_new_grid()
-	_astar_setup()
+	Astar.setup(_grid)
+	_grid_add_flag(Astar.get_furthest_room_from_start(), BOSS)
 
-	_grid_add_flag(get_furthest_room_from_start(), BOSS)
+	_assign_rooms_to_grid()
+
+	load_room(START_CELL)
+
+func load_room(room: Vector2):
+	for room in get_tree().get_nodes_in_group("rooms"):
+		room.queue_free()
+
+	var new_room = _room_config[room].instance()
+
+	main.call_deferred("add_child", new_room)
+
+func save_room():
+	var packed_scene = PackedScene.new()
+
+	for room in main.get_children():
+		if room.is_in_group("rooms"):
+			packed_scene.pack(room)
+			_room_config[cur_room] = packed_scene
+
+			return
+
+	assert("No room to save.")
 
 
-# # # # # # # # #
-#     Astar     #
-# # # # # # # # #
+func change_room(nxt: Vector2) -> void:
+	var next_room := nxt + cur_room
 
-## Overrides the current astar with a new config with the current grid
-func _astar_setup() -> void:
-	_astar.clear()
-	_astar_add_points()
-	_astar_connect_points()
+	save_room()
+	load_room(next_room)
+
+	prev_room = cur_room
+	cur_room = next_room
+
+func _assign_rooms_to_grid() -> void:
+	var tmp = _grid.get_used_cells()
+	for cell in _grid.get_used_cells():
+		var neigh_cnt := count_neighbors(find_neighboring_cells_dir(cell))
+		_room_w_door_cnt[neigh_cnt].shuffle()
+		var room_filename = _room_w_door_cnt[neigh_cnt][0]
+		var room = load(room_filename).instance()
+
+		var packed_scene = PackedScene.new()
+		packed_scene.pack(room)
+
+		_room_config[cell] = packed_scene
 
 
-func _astar_add_points() -> void:
-	var i := 0
-	for point in _grid.get_used_cells():
-		_astar.add_point(i, point)
-		_pos_to_point[point] = i
-		i += 1
+## Takes an array of Vector2
+## Returns binary flags for the count of each neighbor
+func count_neighbors(cells: Array) -> int:
+	var result := 0
+	for cell in cells:
+		match cell:
+			Vector2.UP:
+				result = result | 0b1
+			Vector2.RIGHT:
+				result = result | 0b10
+			Vector2.DOWN:
+				result = result | 0b100
+			Vector2.LEFT:
+				result = result | 0b1000
 
-func _astar_connect_points() -> void:
-	for point in _astar.get_points():
-		var pos := _astar.get_point_position(point)
-		for neigh in _find_neighboring_cells(pos):
-			_astar.connect_points(point, _pos_to_point[neigh])
+	return result
 
-func _find_neighboring_cells(cell: Vector2) -> Array:
+## Takes a cell of a grid and returns an array of directions containing
+## another grid.
+func find_neighboring_cells_dir(cell: Vector2) -> Array:
 	var neigh: Array = []
 	for dir in [Vector2.UP,Vector2.DOWN,Vector2.LEFT,Vector2.RIGHT]:
 		if _grid.get_cellv(cell + dir) != -1:
-			neigh.append(cell + dir)
+			neigh.append(dir)
 
 	return neigh
 
-func get_furthest_room_from_start() -> Vector2:
-	var furthest_path: PoolVector2Array
 
-	var used_cells = _grid.get_used_cells()
-	used_cells.shuffle() # Shuffle to randomize boss room pos furthermore
-	for cell in used_cells:
-		var point = _pos_to_point[cell]
-
-		var path := _astar.get_point_path(point, _pos_to_point[START_CELL])
-		if path.size() > furthest_path.size():
-			furthest_path = path
-
-	return furthest_path[0]
-
-
-# # # # # # # # #
-#     Grid      #
-# # # # # # # # #
 
 ## Returns a randomly generated grid designed for map design
 ## Doesn't assign other flags to cells than VISITED and START
@@ -140,3 +176,28 @@ func _grid_remove_flag(cell: Vector2, flag: int) -> void:
 	else:
 		push_warning("Cell: " + String(cell) +
 				" doesn't have flag: " + String(flag) + ".")
+
+# # # # # # # # #
+#     Rooms     #
+# # # # # # # # #
+
+func _list_room_w_door_cnt():
+	var dir := Directory.new()
+	# warning-ignore:return_value_discarded
+	dir.open("res://Rooms/")
+	# warning-ignore:return_value_discarded
+	dir.list_dir_begin(true, true)
+
+	var room_filename: String = dir.get_next()
+	print(dir.get_current_dir())
+	room_filename = dir.get_current_dir() + room_filename
+
+	while room_filename.trim_prefix("res://Rooms/") != "":
+		var room_neigh_cnt: int = load(room_filename).instance().neighbors
+
+		if not _room_w_door_cnt.has(room_neigh_cnt):
+			_room_w_door_cnt[room_neigh_cnt] = []
+
+		_room_w_door_cnt[room_neigh_cnt].append(room_filename)
+		room_filename = dir.get_next()
+		room_filename = dir.get_current_dir() + room_filename

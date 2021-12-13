@@ -27,7 +27,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Vyrn's Epic Meal"
-run/main_scene="res://Rooms/Room1.tscn"
+run/main_scene="res://Main.tscn"
 config/icon="res://icon.png"
 
 [autoload]
@@ -35,6 +35,7 @@ config/icon="res://icon.png"
 Save="*res://save.gd"
 Floor="*res://floor.gd"
 CollectLexicon="*res://CollectLexicon.gd"
+Astar="*res://astar.gd"
 
 [display]
 
