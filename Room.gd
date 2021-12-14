@@ -40,9 +40,9 @@ func change_room(dir: int):
 		var next_room := _convert_door_flag_to_vec(dir)
 		main.change_room(next_room)
 
-### Repetitive manual connection is required since the scene will emit the
-### "ready" signal at every room change, thus making it impossible to retain
-### connections across room changes, causing a flickering effect.
+### Ugly, repetitive manual connection is required since the scene will emit the
+### "ready" signal at every room change, thus making it impossible to retain the
+### connections across room changes, causing a flickering effect. Sorry.
 
 func _on_Up_body_entered(_body):
 	$Doors/Up.disconnect("body_entered", self, "_on_Up_body_entered")
