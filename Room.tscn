@@ -108,9 +108,13 @@ position = Vector2( 0, 56 )
 [node name="LEFT" type="Position2D" parent="Spawns"]
 position = Vector2( -120, 0 )
 
-[connection signal="tree_entered" from="." to="." method="_on_Room_tree_entered"]
+[connection signal="ready" from="." to="." method="_on_Room_ready"]
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
 [connection signal="body_entered" from="Doors/Up" to="." method="_on_Up_body_entered"]
+[connection signal="body_exited" from="Doors/Up" to="." method="_on_body_exited"]
 [connection signal="body_entered" from="Doors/Right" to="." method="_on_Right_body_entered"]
+[connection signal="body_exited" from="Doors/Right" to="." method="_on_body_exited"]
 [connection signal="body_entered" from="Doors/Down" to="." method="_on_Down_body_entered"]
+[connection signal="body_exited" from="Doors/Down" to="." method="_on_body_exited"]
 [connection signal="body_entered" from="Doors/Left" to="." method="_on_Left_body_entered"]
+[connection signal="body_exited" from="Doors/Left" to="." method="_on_body_exited"]

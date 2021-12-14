@@ -22,7 +22,7 @@ func _astar_add_points() -> void:
 func _astar_connect_points() -> void:
 	for point in _astar.get_points():
 		var pos: Vector2 = _astar.get_point_position(point)
-		for dir in Floor.find_neighboring_cells_dir(pos):
+		for dir in Map.find_opened_doors(pos):
 			var neigh = pos + dir
 			_astar.connect_points(point, _pos_to_point[neigh])
 
@@ -36,7 +36,7 @@ func get_furthest_room_from_start() -> Vector2:
 	for cell in used_cells:
 		var point = _pos_to_point[cell]
 
-		var path: PoolVector2Array = _astar.get_point_path(point, _pos_to_point[Floor.START_CELL])
+		var path: PoolVector2Array = _astar.get_point_path(point, _pos_to_point[Map.START_CELL])
 		if path.size() > furthest_path.size():
 			furthest_path = path
 

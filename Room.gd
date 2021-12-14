@@ -5,6 +5,8 @@ enum DOOR {UP = 0b1, RIGHT = 0b10, DOWN = 0b100, LEFT = 0b1000}
 var path
 export(int, FLAGS, "Up", "Right", "Down", "Left") var neighbors
 
+onready var main: Node = get_tree().get_root().get_node("/root/Main")
+
 func _ready():
 	$Timer.autostart = true
 
@@ -36,23 +38,40 @@ func _convert_door_flag_to_vec(flag: int) -> Vector2:
 func change_room(dir: int):
 	if neighbors & dir: # If room is neighboring
 		var next_room := _convert_door_flag_to_vec(dir)
-		Floor.change_room(next_room)
+		main.change_room(next_room)
+
+### Repetitive manual connection is required since the scene will emit the
+### "ready" signal at every room change, thus making it impossible to retain
+### connections across room changes, causing a flickering effect.
 
 func _on_Up_body_entered(_body):
+	$Doors/Up.disconnect("body_entered", self, "_on_Up_body_entered")
 	change_room(DOOR.UP)
 
 func _on_Right_body_entered(_body):
+	$Doors/Right.disconnect("body_entered", self, "_on_Right_body_entered")
 	change_room(DOOR.RIGHT)
 
 func _on_Down_body_entered(_body):
+	$Doors/Down.disconnect("body_entered", self, "_on_Down_body_entered")
 	change_room(DOOR.DOWN)
 
 func _on_Left_body_entered(_body):
+	$Doors/Left.disconnect("body_entered", self, "_on_Left_body_entered")
 	change_room(DOOR.LEFT)
 
+func _on_body_exited(_body):
+	if not $Doors/Up.is_connected("body_entered", self, "_on_Up_body_entered"):
+		$Doors/Up.connect("body_entered", self, "_on_Up_body_entered")
+	if not $Doors/Right.is_connected("body_entered", self, "_on_Right_body_entered"):
+		$Doors/Right.connect("body_entered", self, "_on_Right_body_entered")
+	if not $Doors/Down.is_connected("body_entered", self, "_on_Down_body_entered"):
+		$Doors/Down.connect("body_entered", self, "_on_Down_body_entered")
+	if not $Doors/Left.is_connected("body_entered", self, "_on_Left_body_entered"):
+		$Doors/Left.connect("body_entered", self, "_on_Left_body_entered")
 
-func _on_Room_tree_entered():
-	var exit_dir = Floor.prev_room - Floor.cur_room
+func _on_Room_ready():
+	var exit_dir = main.prev_room_pos - main.cur_room_pos
 
 	match exit_dir:
 		Vector2.ZERO:

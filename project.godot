@@ -33,9 +33,9 @@ config/icon="res://icon.png"
 [autoload]
 
 Save="*res://save.gd"
-Floor="*res://floor.gd"
 CollectLexicon="*res://CollectLexicon.gd"
 Astar="*res://astar.gd"
+Map="*res://Map.gd"
 
 [display]
 
