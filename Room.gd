@@ -62,12 +62,16 @@ func _on_Left_body_entered(_body):
 
 func _on_body_exited(_body):
 	if not $Doors/Up.is_connected("body_entered", self, "_on_Up_body_entered"):
+	# warning-ignore:return_value_discarded
 		$Doors/Up.connect("body_entered", self, "_on_Up_body_entered")
 	if not $Doors/Right.is_connected("body_entered", self, "_on_Right_body_entered"):
+	# warning-ignore:return_value_discarded
 		$Doors/Right.connect("body_entered", self, "_on_Right_body_entered")
 	if not $Doors/Down.is_connected("body_entered", self, "_on_Down_body_entered"):
+	# warning-ignore:return_value_discarded
 		$Doors/Down.connect("body_entered", self, "_on_Down_body_entered")
 	if not $Doors/Left.is_connected("body_entered", self, "_on_Left_body_entered"):
+	# warning-ignore:return_value_discarded
 		$Doors/Left.connect("body_entered", self, "_on_Left_body_entered")
 
 func _on_Room_ready():
